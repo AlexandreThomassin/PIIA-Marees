@@ -1,0 +1,6 @@
+versions/version1/dataset/
+versions/version2/.ipynb_checkpoints
+versions/version2/Model1.csv
+versions/version2/test.csv
+versions/version2/train.csv
+versions/version2/prediction_1958.png
