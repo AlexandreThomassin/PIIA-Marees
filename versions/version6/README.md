@@ -1,0 +1,18 @@
+# LSTM model with PyTorch
+
+#### Real data preparation
+![](./version6/real-data.png)
+
+#### Training and validation sets
+![](./version6/train-test.png)
+
+#### Model evaluation
+![](./version6/compared.png)
+![](./version6/predicted-validation.png)
+
+#### Predicting future tide weight
+![](./version6/next-day.png)
+
+Predicted tide height of the next day: 5.29 m. 
+
+Actual tide heght : 5.32m
