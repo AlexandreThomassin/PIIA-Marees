@@ -15,4 +15,4 @@
 
 Predicted tide height of the next day: 5.29 m. 
 
-Actual tide heght : 5.32m
+Actual tide height : 5.32m
