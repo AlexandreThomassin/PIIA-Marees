@@ -41,15 +41,15 @@ def transform_to_supervised(df,
     # input sequence (t-n, ... t-1)
     for i in range(previous_steps, 0, -1):
         cols.append(df.shift(i))
-        names += [('%s(t-%d)' % (col_name, i)) for col_name in col_names]
+        names += [('%s (t-%d)' % (col_name, i)) for col_name in col_names]
 
     # forecast sequence (t, t+1, ... t+n)
     for i in range(0, forecast_steps):
         cols.append(df.shift(-i))
         if i == 0:
-            names += [('%s(t)' % col_name) for col_name in col_names]
+            names += [('%s (t)' % col_name) for col_name in col_names]
         else:
-            names += [('%s(t+%d)' % (col_name, i)) for col_name in col_names]
+            names += [('%s (t+%d)' % (col_name, i)) for col_name in col_names]
 
     # put all the columns together into a single aggregated DataFrame
     agg = pd.concat(cols, axis=1)
@@ -60,6 +60,8 @@ def transform_to_supervised(df,
         agg.dropna(inplace=True)
 
     return agg
+
+
 
 ### MAIN PART
 
@@ -76,9 +78,15 @@ columns = ["Date", "Heure", "SG Hauteur", "SG Ectype", "SG Q", "SN Hauteur", "SN
 nb_years = 10
 
 # Pourcentage d'observation voulu : Par soucis de taille en mémoire on ne peut pas utiliser toutes les données
-percent = 0.1
+percent = 1
+
+# Number of previous steps and forward steps
+previous_steps = 12
+forward_steps = 3
 
 df = pd.DataFrame([])
+
+print("Début de la lecture des fichier CSV :")
 
 for nb_file in range(nb_years+1):
     for sem in range(1,3):
@@ -97,34 +105,81 @@ for nb_file in range(nb_years+1):
                 df_temp['Date'] = pd.to_datetime(df_temp['Date'], format='%d/%m/%Y %H:%M:%S')
                 # print(df_temp)
 
-                df = pd.concat((df, df_temp))
+                df = pd.concat((df, df_temp), ignore_index=True)
 
 
         except FileNotFoundError:
             print(f"Fichier loire{2012 + nb_file}_Semestre{sem}.mel non trouvé")
+
+print("Fin de la lecture des fichier CSV")
+print("---------------------------------")
 
 print(f"Datas : \n {df} \n")
 
 # Traitement sur les données
 
 df = df.drop_duplicates(subset = ['Date'], keep = 'last')
+date = df.pop("Date")
 
-X_tides = df[:int(df.shape[0]*percent)]
-Y_tides = df[:int(df.shape[0]*percent)]
+# On récupère les données de qualitées 9 qui sont problématique
+# On ne les cherches pas avec SG Q car sinon on obtient plus de la moitié des relevés qui sont de qualité 9
+Q = df[["SN Q","Montoir Q", "Paimboeuf Q","Cordemais Q", "LP Q","NUB Q", "NSAL Q"]]
 
-# X_tides = X_tides.drop([
-#         "SG Q", "SN Q",
-#         "Montoir Q", "Paimboeuf Q",
-#         "Cordemais Q", "LP Q",
-#         "NUB Q", "NSAL Q"], axis = 1)
+print(Q)
+indexes = Q[Q.values == 9].index.tolist()
+print(f"Nombre de données de qualitées 9 : {len(indexes)}")
 
-Y_tides = Y_tides.drop(["SG Ectype", "SG Q", "SN Ectype", "SN Q",
+df = df.drop(index=indexes)
+
+# On ne récupère pas les bords haut et bas des données car ils vont être enlevés par le shift
+X_tides = df[:int(df.shape[0]*percent)-forward_steps+1]
+Y_tides = df[previous_steps:int(df.shape[0]*percent)]
+
+
+# On enlève les features qui ne nous intéressent pas 
+X_tides = X_tides.drop(["SG Hauteur", "SG Ectype", "SG Q", "SN Ectype", "SN Q",
+          "Montoir Ectype", "Montoir Q", "Paimboeuf Ectype", "Paimboeuf Q",
+          "Cordemais Ectype", "Cordemais Q", "LP Ectype", "LP Q",
+          "NUB Ectype", "NUB Q", "NSAL Ectype", "NSAL Q"], axis = 1)
+
+
+Y_tides = Y_tides.drop(["SG Hauteur", "SG Ectype", "SG Q", "SN Ectype", "SN Q",
           "Montoir Ectype", "Montoir Q", "Paimboeuf Ectype", "Paimboeuf Q",
           "Cordemais Ectype", "Cordemais Q", "LP Ectype", "LP Q",
           "NUB Ectype", "NUB Q", "NSAL Ectype", "NSAL Q", "SG Patm", "Nantes Patm"], axis = 1)
 
+
+# On réordonne les colonnes
+X_cols = []
+cols = X_tides.columns.tolist()[:-1]
+for name in cols:
+    X_cols += [name + f" (t{i})" for i in range(-previous_steps, 0)]
+X_cols = ["Date"] + X_cols
+
+Y_cols = []
+cols = Y_tides.columns.tolist()[:-1]
+for name in cols:
+    Y_cols += [name + " (t)"] + [name + f" (t+{i})" for i in range(1,forward_steps)]
+Y_cols = ["Date"] + Y_cols
+
+
+# On shift X pour avoir les 12 derniers relevés sur la même ligne
+X_tides = transform_to_supervised(X_tides, previous_steps=previous_steps, forecast_steps=0)
+X_tides["Date"] = date
+
+X_tides = X_tides[X_cols]
 print(f"X_tides : \n{X_tides}\n")
+
+# On shift Y pour avoir les 3 prochains relevés sur la même ligne
+Y_tides = transform_to_supervised(Y_tides, previous_steps=0, forecast_steps=forward_steps)
+Y_tides["Date"] = date
+Y_tides = Y_tides[Y_cols]
 print(f"Y_tides : \n{Y_tides}\n")
 
+
+print("Ecriture des fichiers en format CSV : Cela peut prendre quelques secondes jusqu'à quelques minutes !")
+
 X_tides.to_csv(data_path + "X_tides.csv")
+print("X_tides écrit au format .csv")
 Y_tides.to_csv(data_path + "Y_tides.csv")
+print("Y_tides écrit au format .csv")
