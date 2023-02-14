@@ -1,7 +1,7 @@
 """
 Ce script prend les données de fichier .mel et les transforme en X_tides.csv et Y_tides.csv,
 X_tides étant les features d'entrée :
-    - Hauteurs + Ecart Type de tous les port, Patm de Saint-Gilles et Nantes
+    - Hauteurs + Patm de Saint-Gilles et Nantes
 Y_tides étant les features de sortie :
     - Hauteurs des ports
 
@@ -9,6 +9,7 @@ Y_tides étant les features de sortie :
 
 import pandas as pd
 
+# I took this function from github : https://gist.github.com/monocongo/6e0df19c9dd845f3f465a9a6ccfcef37
 def transform_to_supervised(df,
                             previous_steps=1, 
                             forecast_steps=1,
