@@ -79,10 +79,10 @@ columns = ["Date", "Heure", "SG Hauteur", "SG Ectype", "SG Q", "SN Hauteur", "SN
 nb_years = 10
 
 # Pourcentage d'observation voulu : Par soucis de taille en mémoire on ne peut pas utiliser toutes les données
-percent = 1
+percent = 0.2
 
 # Number of previous steps and forward steps
-previous_steps = 12
+previous_steps = 24
 forward_steps = 3
 
 df = pd.DataFrame([])
@@ -152,17 +152,31 @@ Y_tides = Y_tides.drop(["SG Hauteur", "SG Ectype", "SG Q", "SN Ectype", "SN Q",
 
 # On réordonne les colonnes
 X_cols = []
-cols = X_tides.columns.tolist()[:-1]
+cols = X_tides.columns.tolist()
 for name in cols:
     X_cols += [name + f" (t{i})" for i in range(-previous_steps, 0)]
 X_cols = ["Date"] + X_cols
 
 Y_cols = []
-cols = Y_tides.columns.tolist()[:-1]
+cols = Y_tides.columns.tolist()
 for name in cols:
     Y_cols += [name + " (t)"] + [name + f" (t+{i})" for i in range(1,forward_steps)]
 Y_cols = ["Date"] + Y_cols
 
+print("Tranforming")
+
+import sys
+def sizeof_fmt(num, suffix='B'):
+    ''' by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified'''
+    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f %s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f %s%s" % (num, 'Yi', suffix)
+
+for name, size in sorted(((name, sys.getsizeof(value)) for name, value in locals().items()),
+                         key= lambda x: -x[1])[:10]:
+    print("{:>30}: {:>8}".format(name, sizeof_fmt(size)))
 
 # On shift X pour avoir les 12 derniers relevés sur la même ligne
 X_tides = transform_to_supervised(X_tides, previous_steps=previous_steps, forecast_steps=0)
