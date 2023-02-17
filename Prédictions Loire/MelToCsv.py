@@ -141,7 +141,7 @@ Y_tides = df[previous_steps:int(df.shape[0]*percent)]
 X_tides = X_tides.drop(["SG Hauteur", "SG Ectype", "SG Q", "SN Ectype", "SN Q",
           "Montoir Ectype", "Montoir Q", "Paimboeuf Ectype", "Paimboeuf Q",
           "Cordemais Ectype", "Cordemais Q", "LP Ectype", "LP Q",
-          "NUB Ectype", "NUB Q", "NSAL Ectype", "NSAL Q"], axis = 1)
+          "NUB Ectype", "NUB Q", "NSAL Ectype", "NSAL Q", "SG Patm", "Nantes Patm"], axis = 1)
 
 
 Y_tides = Y_tides.drop(["SG Hauteur", "SG Ectype", "SG Q", "SN Ectype", "SN Q",
@@ -165,6 +165,7 @@ Y_cols = ["Date"] + Y_cols
 
 print("Tranforming")
 
+# Voir la taille des variables en RAM
 import sys
 def sizeof_fmt(num, suffix='B'):
     ''' by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified'''
