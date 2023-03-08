@@ -1,6 +1,11 @@
-print("Ecriture des fichiers en format CSV : Cela peut prendre quelques secondes jusqu'à quelques minutes !")
+X_cols = []
+cols = X_tides.columns.tolist()
+for name in cols:
+    X_cols += [name + f" (t{i})" for i in range(-previous_steps, 0)]
+X_cols = ["Date"] + X_cols
 
-# X_tides.to_csv(data_path + "X_tides.csv")
-# print("X_tides écrit au format .csv")
-# Y_tides.to_csv(data_path + "Y_tides.csv")
-# print("Y_tides écrit au format .csv")
+Y_cols = []
+cols = Y_tides.columns.tolist()
+for name in cols:
+    Y_cols += [name + " (t)"] + [name + f" (t+{i})" for i in range(1,forward_steps)]
+Y_cols = ["Date"] + Y_cols

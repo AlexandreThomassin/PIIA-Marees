@@ -79,11 +79,11 @@ columns = ["Date", "Heure", "SG Hauteur", "SG Ectype", "SG Q", "SN Hauteur", "SN
 nb_years = 10
 
 # Pourcentage d'observation voulu : Par soucis de taille en mémoire on ne peut pas utiliser toutes les données
-percent = 0.2
+percent = 1
 
 # Number of previous steps and forward steps
-previous_steps = 24
-forward_steps = 3
+previous_steps = 12
+forward_steps = 1
 
 df = pd.DataFrame([])
 
@@ -138,16 +138,20 @@ Y_tides = df[previous_steps:int(df.shape[0]*percent)]
 
 
 # On enlève les features qui ne nous intéressent pas 
-X_tides = X_tides.drop(["SG Hauteur", "SG Ectype", "SG Q", "SN Ectype", "SN Q",
-          "Montoir Ectype", "Montoir Q", "Paimboeuf Ectype", "Paimboeuf Q",
-          "Cordemais Ectype", "Cordemais Q", "LP Ectype", "LP Q",
-          "NUB Ectype", "NUB Q", "NSAL Ectype", "NSAL Q", "SG Patm", "Nantes Patm"], axis = 1)
+# X_tides = X_tides.drop(["SG Hauteur", "SG Ectype", "SG Q", "SN Ectype", "SN Q",
+#           "Montoir Ectype", "Montoir Q", "Paimboeuf Ectype", "Paimboeuf Q",
+#           "Cordemais Ectype", "Cordemais Q", "LP Ectype", "LP Q",
+#           "NUB Ectype", "NUB Q", "NSAL Ectype", "NSAL Q", "SG Patm", "Nantes Patm"], axis = 1)
+
+X_tides = X_tides["NSAL Hauteur"].to_frame()
 
 
-Y_tides = Y_tides.drop(["SG Hauteur", "SG Ectype", "SG Q", "SN Ectype", "SN Q",
-          "Montoir Ectype", "Montoir Q", "Paimboeuf Ectype", "Paimboeuf Q",
-          "Cordemais Ectype", "Cordemais Q", "LP Ectype", "LP Q",
-          "NUB Ectype", "NUB Q", "NSAL Ectype", "NSAL Q", "SG Patm", "Nantes Patm"], axis = 1)
+# Y_tides = Y_tides.drop(["SG Hauteur", "SG Ectype", "SG Q", "SN Ectype", "SN Q",
+#           "Montoir Ectype", "Montoir Q", "Paimboeuf Ectype", "Paimboeuf Q",
+#           "Cordemais Ectype", "Cordemais Q", "LP Ectype", "LP Q",
+#           "NUB Ectype", "NUB Q", "NSAL Ectype", "NSAL Q", "SG Patm", "Nantes Patm"], axis = 1)
+
+Y_tides = Y_tides["NSAL Hauteur"].to_frame()
 
 
 # On réordonne les colonnes
@@ -199,3 +203,6 @@ X_tides.to_csv(data_path + "X_tides.csv")
 print("X_tides écrit au format .csv")
 Y_tides.to_csv(data_path + "Y_tides.csv")
 print("Y_tides écrit au format .csv")
+
+n_sal = df[["SN Hauteur", "Montoir Hauteur", "Paimboeuf Hauteur", "Cordemais Hauteur", "LP Hauteur", "NUB Hauteur", "NSAL Hauteur"]]
+n_sal.to_csv(data_path + "dock.csv")
