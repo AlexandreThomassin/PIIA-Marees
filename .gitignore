@@ -1,13 +1,23 @@
-versions/version1/dataset/
-versions/version2/.ipynb_checkpoints
-versions/version2/Model1.csv
-versions/version2/test.csv
-versions/version2/train.csv
-versions/version3/.ipynb_checkpoints
-versions/version3/Model1.csv
-versions/version3/test.csv
-versions/version3/train.csv
-versions/version4/.ipynb_checkpoints
-versions/version5/.ipynb_checkpoints
-versions/version7/.ipynb_checkpoints
-versions/version8/.ipynb_checkpoints
+Nicolas/PIIA 1/version1/*
+Nicolas/PIIA 1/version2/*
+Nicolas/PIIA 1/version3/*
+Nicolas/PIIA 1/version4/*
+Nicolas/PIIA 1/version5/*
+Nicolas/PIIA 1/version6/*
+Nicolas/PIIA 1/version7/*
+Nicolas/PIIA 1/version8/*
+Nicolas/PIIA 1/version9/*
+
+Nicolas/PIIA 1/version1/dataset/
+Nicolas/PIIA 1/version2/.ipynb_checkpoints
+Nicolas/PIIA 1/version2/Model1.csv
+Nicolas/PIIA 1/version2/test.csv
+Nicolas/PIIA 1/version2/train.csv
+Nicolas/PIIA 1/version3/.ipynb_checkpoints
+Nicolas/PIIA 1/version3/Model1.csv
+Nicolas/PIIA 1/version3/test.csv
+Nicolas/PIIA 1/version3/train.csv
+Nicolas/PIIA 1/version4/.ipynb_checkpoints
+Nicolas/PIIA 1/version5/.ipynb_checkpoints
+Nicolas/PIIA 1/version7/.ipynb_checkpoints
+Nicolas/PIIA 1/version8/.ipynb_checkpoints
