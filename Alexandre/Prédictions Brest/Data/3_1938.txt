@@ -1,0 +1,15 @@
+# Station : BREST
+# Longitude : -4.49503994
+# Latitude : 48.38290024
+# Organisme fournisseur de données : Shom, Marine nationale
+# Fuseau horaire : UTC
+# Référence verticale : zero_hydrographique
+# Unité : m
+# Source 1 : Données brutes temps réel
+# Source 2 : Données brutes temps différé
+# Source 3 : Données validées temps différé
+# Source 4 : Données horaires validées
+# Source 5 : Données horaires brutes
+# Source 6 : Pleines et basses mers
+# Date;Valeur;Source
+31/12/1938 23:00:00;5.56;4
