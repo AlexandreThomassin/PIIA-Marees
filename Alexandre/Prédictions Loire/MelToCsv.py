@@ -119,8 +119,10 @@ print(f"Datas : \n {df} \n")
 
 # Traitement sur les données
 
-df = df.drop_duplicates(subset = ['Date'], keep = 'last')
-date = df.pop("Date")
+# Get hour data : 1 every 12 lines
+hour_indexes = list(range(0,df.shape[0],12))
+df_hour = df.take(hour_indexes, is_copy=True)
+
 
 # On récupère les données de qualitées 9 qui sont problématique
 # On ne les cherches pas avec SG Q car sinon on obtient plus de la moitié des relevés qui sont de qualité 9
@@ -131,6 +133,9 @@ indexes = Q[Q.values == 9].index.tolist()
 print(f"Nombre de données de qualitées 9 : {len(indexes)}")
 
 df = df.drop(index=indexes)
+
+df = df.drop_duplicates(subset = ['Date'], keep = 'last')
+date = df.pop("Date")
 
 # On ne récupère pas les bords haut et bas des données car ils vont être enlevés par le shift
 X_tides = df[:int(df.shape[0]*percent)-forward_steps+1]
@@ -197,12 +202,42 @@ Y_tides = Y_tides[Y_cols]
 print(f"Y_tides : \n{Y_tides}\n")
 
 
-print("Ecriture des fichiers en format CSV : Cela peut prendre quelques secondes jusqu'à quelques minutes !")
+# print("Ecriture des fichiers en format CSV : Cela peut prendre quelques secondes jusqu'à quelques minutes !")
 
-X_tides.to_csv(data_path + "X_tides.csv")
-print("X_tides écrit au format .csv")
-Y_tides.to_csv(data_path + "Y_tides.csv")
-print("Y_tides écrit au format .csv")
+# X_tides.to_csv(data_path + "X_tides.csv")
+# print("X_tides écrit au format .csv")
+# Y_tides.to_csv(data_path + "Y_tides.csv")
+# print("Y_tides écrit au format .csv")
 
-n_sal = df[["SN Hauteur", "Montoir Hauteur", "Paimboeuf Hauteur", "Cordemais Hauteur", "LP Hauteur", "NUB Hauteur", "NSAL Hauteur"]]
-n_sal.to_csv(data_path + "dock.csv")
+dataset = df[["SN Hauteur", "Montoir Hauteur", "Paimboeuf Hauteur", "Cordemais Hauteur", "LP Hauteur", "NUB Hauteur", "NSAL Hauteur", "SG Patm", "Nantes Patm"]]
+
+dataset.insert(0, "Date", date)
+
+debit = pd.read_csv(data_path + "debit.csv", delimiter=";")
+debit = debit.drop(["null"], axis=1)
+
+debit['Date'] = pd.to_datetime(debit['Date'], format='%d/%m/%Y %H:%M:%S')
+debit_date = debit['Date']
+
+print(debit.head())
+
+dataset = dataset[dataset['Date'].isin(debit_date)]
+
+dataset_date = dataset["Date"].to_list()
+
+debit = debit[debit["Date"].isin(dataset_date)]
+
+dataset["Debit Montjean"] = debit["Debit Montjean"].to_list()
+
+date = dataset.pop('Date')
+
+dataset = dataset[:-9000]
+
+
+print(dataset.tail())
+print(dataset.shape)
+
+dataset.to_csv(data_path + "dataset.csv")
+print("dataset écrit au format .csv")
+
+print(dataset[dataset['NSAL Hauteur'] < 10])
