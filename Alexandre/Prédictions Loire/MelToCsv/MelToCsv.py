@@ -1,10 +1,14 @@
 """
-Ce script prend les données de fichier .mel et les transforme en X_tides.csv et Y_tides.csv,
-X_tides étant les features d'entrée :
-    - Hauteurs + Patm de Saint-Gilles et Nantes
-Y_tides étant les features de sortie :
-    - Hauteurs des ports
+This script take the .mel files datas and transform them to either :
+- if supervised
+    X_tides with the previous step features :
+        - Water height + Atmospheric pressure from Saint-Gilles and Nantes
+    Y_tides with the next step labels :
+        - Water height
+- else
+    A dataset with all the wanted columns
 
+You can choose to add flow_rate in the features and/or labels.
 """
 import pandas as pd
 from transform_to_supervised import transform_to_supervised
